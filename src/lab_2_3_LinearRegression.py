@@ -33,11 +33,10 @@ class LinearRegressor:
             None: Modifies the model's coefficients and intercept in-place.
         """
         if np.ndim(X) > 1:
-            X = X.reshape(1, -1)
+            X = X.reshape(-1)
 
-        # TODO: Train linear regression model with only one coefficient
-        self.coefficients = None
-        self.intercept = None
+        self.coefficients = np.sum((X - np.mean(X)) * (y - np.mean(y))) / np.sum((X - np.mean(X)) ** 2)
+        self.intercept = np.mean(y) - self.coefficients * np.mean(X)
 
     # This part of the model you will only need for the last part of the notebook
     def fit_multiple(self, X, y):
@@ -54,10 +53,16 @@ class LinearRegressor:
         Returns:
             None: Modifies the model's coefficients and intercept in-place.
         """
-        # TODO: Train linear regression model with multiple coefficients
-        self.intercept = None
-        self.coefficients = None
+        column_intercept = np.ones((X.shape[0], 1))
+        X = np.hstack((column_intercept, X))
 
+        X_transpose = np.transpose(X)
+        
+        beta = np.dot(np.dot(np.linalg.inv(np.dot(X_transpose, X)), X_transpose), y)
+
+        self.intercept = beta[0]
+        self.coefficients = beta[1:]
+        
     def predict(self, X):
         """
         Predict the dependent variable values using the fitted model.
@@ -75,11 +80,9 @@ class LinearRegressor:
             raise ValueError("Model is not yet fitted")
 
         if np.ndim(X) == 1:
-            # TODO: Predict when X is only one variable
-            predictions = None
+            predictions = self.intercept + self.coefficients * X
         else:
-            # TODO: Predict when X is more than one variable
-            predictions = None
+            predictions = self.intercept + np.dot(X, self.coefficients)
         return predictions
 
 

@@ -53,15 +53,15 @@ class LinearRegressor:
         Returns:
             None: Modifies the model's coefficients and intercept in-place.
         """
-        column_intercept = np.ones((X.shape[0], 1))
-        X = np.hstack((column_intercept, X))
+        columna_intercept = np.ones((X.shape[0], 1))
+        X = np.hstack((columna_intercept, X))
 
         X_transpose = np.transpose(X)
         
-        beta = np.dot(np.dot(np.linalg.inv(np.dot(X_transpose, X)), X_transpose), y)
+        w = np.dot(np.dot(np.linalg.inv(np.dot(X_transpose, X)), X_transpose), y)
 
-        self.intercept = beta[0]
-        self.coefficients = beta[1:]
+        self.intercept = w[0]
+        self.coefficients = w[1:]
         
     def predict(self, X):
         """
@@ -80,11 +80,12 @@ class LinearRegressor:
             raise ValueError("Model is not yet fitted")
 
         if np.ndim(X) == 1:
+            # Predict when X is only one variable
             predictions = self.intercept + self.coefficients * X
         else:
+            # Predict when X is more than one variable
             predictions = self.intercept + np.dot(X, self.coefficients)
         return predictions
-
 
 def evaluate_regression(y_true, y_pred):
     """
